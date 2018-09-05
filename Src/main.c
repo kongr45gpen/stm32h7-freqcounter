@@ -124,7 +124,7 @@ int main(void)
 	  );
 	  HAL_UART_Transmit(&huart3, str, strlen(str), 10000);
 
-	  float frequency = HAL_RCC_GetHCLKFreq() / (float) HAL_HRTIM_GetCapturedValue(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, HRTIM_CAPTUREUNIT_1) / 1000.0;
+	  float frequency = 400000000.0 / ((float) HAL_HRTIM_GetCapturedValue(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, HRTIM_CAPTUREUNIT_1)+1) / 1000.0;
 	  snprintf(str, 80, "             Estimated Frequency: %f kHz\r\n", frequency);
 
 	  HAL_UART_Transmit(&huart3, str, strlen(str), 10000);
