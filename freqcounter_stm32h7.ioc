@@ -1,10 +1,16 @@
 #MicroXplorer Configuration settings - do not modify
 File.Version=6
-HRTIM.CaptureChannel_TA1=HRTIM_CAPTUREUNIT_1
-HRTIM.CaptureEvent_TA1=HRTIM_EVENT_1
+HRTIM.CaptureUnit1-No_output_TA=HRTIM_CAPTUREUNIT_1
 HRTIM.CompareUnit1-MasterTimer=__NULL
-HRTIM.Configuration_TA=Simple
-HRTIM.IPParameters=Configuration_TA,CaptureChannel_TA1,CaptureEvent_TA1,CompareUnit1-MasterTimer
+HRTIM.Configuration_TA=Waveform
+HRTIM.IPParameters=Configuration_TA,CompareUnit1-MasterTimer,RepetitionCounter-No_output_TA,ResetUpdate-No_output_TA,NumberResetTrigger-No_output_TA,ResetTrigger1-No_output_TA,CaptureUnit1-No_output_TA,NumberTriggerSource_Captureconfig1-No_output_TA,TriggerCapture1_Source1-No_output_TA,NumberInterruptRequests-No_output_TA
+HRTIM.NumberInterruptRequests-No_output_TA=0
+HRTIM.NumberResetTrigger-No_output_TA=1
+HRTIM.NumberTriggerSource_Captureconfig1-No_output_TA=1
+HRTIM.RepetitionCounter-No_output_TA=0xff
+HRTIM.ResetTrigger1-No_output_TA=HRTIM_TIMRESETTRIGGER_EEV_1
+HRTIM.ResetUpdate-No_output_TA=HRTIM_TIMUPDATEONRESET_DISABLED
+HRTIM.TriggerCapture1_Source1-No_output_TA=HRTIM_CAPTURETRIGGER_EEV_1
 KeepUserPlacement=true
 Mcu.Family=STM32H7
 Mcu.IP0=CORTEX_M7

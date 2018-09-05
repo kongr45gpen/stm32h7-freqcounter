@@ -36,7 +36,9 @@
 #include "stm32h7xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+extern HRTIM_HandleTypeDef hhrtim;
+extern UART_HandleTypeDef huart3;
+extern uint32_t timer;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -51,7 +53,9 @@
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+	timer = HAL_HRTIM_GetCapturedValue(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, HRTIM_CAPTUREUNIT_1);
+//	__HAL_HRTIM_SETCOUNTER(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, 0);
+//	hhrtim.Instance->sTimerxRegs[HRTIM_TIMERINDEX_TIMER_A].CPT1xR = 0;
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();

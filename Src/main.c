@@ -63,7 +63,7 @@ static void MX_HRTIM_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+uint32_t timer;
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -102,6 +102,10 @@ int main(void)
   MX_USART3_UART_Init();
   MX_HRTIM_Init();
   /* USER CODE BEGIN 2 */
+//  HAL_HRTIM_SimpleCaptureStart(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, HRTIM_CAPTUREUNIT_1);
+  HAL_HRTIM_WaveformCounterStart(&hhrtim, HRTIM_TIMERID_TIMER_A);
+
+//  HAL_HRTIM_Waveform
 
   /* USER CODE END 2 */
 
@@ -109,8 +113,21 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_UART_Transmit(&huart3, "Hello World\r\n", strlen("Hello World\r\n"), 10000);
-	  HAL_Delay(100);
+//	  HAL_UART_Transmit(&huart3, "Hello World\r\n", strlen("Hello World\r\n"), HAL_GetTick(), 10000);
+
+	  uint8_t str[80];
+	  snprintf(str, 80, "(%10d) Timer value: [%d] %d * %d\r\n",
+			  HAL_GetTick(),
+			  timer,
+			  HAL_HRTIM_GetCapturedValue(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, HRTIM_CAPTUREUNIT_1),
+			  hhrtim.Instance->sTimerxRegs[HRTIM_TIMERINDEX_TIMER_A].REPxR
+	  );
+
+	  float frequency = HAL_RCC_GetHCLKFreq() / (float) HAL_HRTIM_GetCapturedValue(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, HRTIM_CAPTUREUNIT_1)
+
+	  HAL_UART_Transmit(&huart3, str, strlen(str), 10000);
+	  HAL_Delay(20);
+
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -204,9 +221,10 @@ void SystemClock_Config(void)
 static void MX_HRTIM_Init(void)
 {
 
+  HRTIM_EventCfgTypeDef pEventCfg;
   HRTIM_TimeBaseCfgTypeDef pTimeBaseCfg;
   HRTIM_TimerCfgTypeDef pTimerCfg;
-  HRTIM_SimpleCaptureChannelCfgTypeDef pSimpleCaptureChannelCfg;
+  HRTIM_CaptureCfgTypeDef pCaptureCfg;
 
   hhrtim.Instance = HRTIM1;
   hhrtim.Init.HRTIMInterruptResquests = HRTIM_IT_NONE;
@@ -217,6 +235,15 @@ static void MX_HRTIM_Init(void)
   }
 
   if (HAL_HRTIM_EventPrescalerConfig(&hhrtim, HRTIM_EVENTPRESCALER_DIV1) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  pEventCfg.Source = HRTIM_EVENTSRC_1;
+  pEventCfg.Polarity = HRTIM_EVENTPOLARITY_HIGH;
+  pEventCfg.Sensitivity = HRTIM_EVENTSENSITIVITY_LEVEL;
+  pEventCfg.FastMode = HRTIM_EVENTFASTMODE_DISABLE;
+  if (HAL_HRTIM_EventConfig(&hhrtim, HRTIM_EVENT_1, &pEventCfg) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -248,16 +275,32 @@ static void MX_HRTIM_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
+  pTimeBaseCfg.RepetitionCounter = 0xff;
   if (HAL_HRTIM_TimeBaseConfig(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, &pTimeBaseCfg) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  pSimpleCaptureChannelCfg.Event = HRTIM_EVENT_1;
-  pSimpleCaptureChannelCfg.EventPolarity = HRTIM_EVENTPOLARITY_HIGH;
-  pSimpleCaptureChannelCfg.EventSensitivity = HRTIM_EVENTSENSITIVITY_LEVEL;
-  pSimpleCaptureChannelCfg.EventFilter = HRTIM_EVENTFILTER_NONE;
-  if (HAL_HRTIM_SimpleCaptureChannelConfig(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, HRTIM_CAPTUREUNIT_1, &pSimpleCaptureChannelCfg) != HAL_OK)
+  pTimerCfg.InterruptRequests = HRTIM_TIM_IT_NONE;
+  pTimerCfg.DMARequests = HRTIM_TIM_DMA_NONE;
+  pTimerCfg.DMASrcAddress = 0x0000;
+  pTimerCfg.DMADstAddress = 0x0000;
+  pTimerCfg.DMASize = 0x1;
+  pTimerCfg.PushPull = HRTIM_TIMPUSHPULLMODE_DISABLED;
+  pTimerCfg.FaultEnable = HRTIM_TIMFAULTENABLE_NONE;
+  pTimerCfg.FaultLock = HRTIM_TIMFAULTLOCK_READWRITE;
+  pTimerCfg.DeadTimeInsertion = HRTIM_TIMDEADTIMEINSERTION_DISABLED;
+  pTimerCfg.DelayedProtectionMode = HRTIM_TIMER_A_B_C_DELAYEDPROTECTION_DISABLED;
+  pTimerCfg.UpdateTrigger = HRTIM_TIMUPDATETRIGGER_NONE;
+  pTimerCfg.ResetTrigger = HRTIM_TIMRESETTRIGGER_EEV_1;
+  pTimerCfg.ResetUpdate = HRTIM_TIMUPDATEONRESET_DISABLED;
+  if (HAL_HRTIM_WaveformTimerConfig(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, &pTimerCfg) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  pCaptureCfg.Trigger = HRTIM_CAPTURETRIGGER_EEV_1;
+  if (HAL_HRTIM_WaveformCaptureConfig(&hhrtim, HRTIM_TIMERINDEX_TIMER_A, HRTIM_CAPTUREUNIT_1, &pCaptureCfg) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
