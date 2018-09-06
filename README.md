@@ -1,6 +1,8 @@
 # stm32h7-freqcounter
 A frequency counter for the NUCLEO-STM32H743
 
+![Frequency counter image, displaying frequency in kHz and number of ticks on an OLED screen](SSD1306.jpg)
+
 ## Usage details
 - UART: 8N1, 115200 baud/s
 - Processor frequency: 400 MHz
