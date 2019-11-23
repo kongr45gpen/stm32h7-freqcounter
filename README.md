@@ -15,12 +15,12 @@ A frequency counter for the NUCLEO-STM32H743
 #### OLED pinout (optional)
 Tested OLED: SSD1306 (4-wire SPI)
 - `3.3V` --> `VCC`
+- `GND` --> `GND`
 - `PB3` (opposite of D10) --> `SCK`/`D0`
 - `PB5` (opposite of D11) --> `MOSI`/`D1`
 - `PF12` (D8) --> `RES`ET
 - `PD15` (D9) --> `DC` (Data/Command)
-- `GND` --> `GND`
-- `GND` --> `CS`/`NSS` (Negative Slave Select)
+- `PB12` (opposite of GND) --> `CS`/`NSS` (Negative Slave Select)
 
 #### Sample output
 - `PC9` (opposite of IOREF) --> 200 MHz (`MCO` - Master Clock Output)
